@@ -12,7 +12,7 @@ are normally run as executables.
 
 No docs, no warranty. Feel free to modify or use my code elsewhere.
 
-Personnaly I think `mdmake.nu` may stand a chance elsewhere, others are simply
+Personally I think `mdmake.nu` may stand a chance elsewhere, others are simply
 rubbish.
 
 ## License
