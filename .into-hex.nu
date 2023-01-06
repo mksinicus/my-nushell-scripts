@@ -2,20 +2,20 @@
 
 # Convert value to hex
 export def "into hex" [] {
-  let num = $in
-  let hexes = "0123456789abcdef"
-  mut num = ($num | into int)
-  let minus = (if $num < 0 { $num = 0 - $num; true } else { false })
-  mut digits = ""
+  let in_dec = $in
+  let hexits = "0123456789abcdef"
+  mut in_dec = ($in_dec | into int)
+  let is_negative = (if $in_dec < 0 { $in_dec = 0 - $in_dec; true } else { false })
+  mut out_hex = ""
   loop {
-    let remainder = ($num mod 16)
-    let digit = ($hexes | str substring $remainder..($remainder + 1))
-    $digits = ($digits + $digit)
-    $num = $num // 16
-    if $num == 0 {
+    let remainder = ($in_dec mod 16)
+    let hexit = ($hexits | str substring $remainder..($remainder + 1))
+    $out_hex = ($out_hex + $hexit)
+    $in_dec = $in_dec // 16
+    if $in_dec == 0 {
       break
     }
   }
-  if $minus { $digits = $digits + "-"}
-  $digits | str reverse
+  if $is_negative { $out_hex = $out_hex + "-"}
+  $out_hex | str reverse
 }
