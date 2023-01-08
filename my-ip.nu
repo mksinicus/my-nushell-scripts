@@ -1,13 +1,28 @@
 #! /usr/bin/nu
 
 def main [
-  --proxychains (-p)
+  --ifconfig (-i) # Get from <ifconfig.me>
 ] {
-  let my_ip = (if $proxychains {
-    proxychains curl cip.cc
+  let-env __ifconfig = if $ifconfig {true} else {false}
+  let my_ip = (get-ip | process-ip $in)
+  hide-env __ifconfig
+
+  $my_ip
+}
+
+def get-ip [] {
+  if $env.__ifconfig {
+    curl ifconfig.me/all
   } else {
     curl cip.cc
-  } | lines | each {|x| if ($x | is-empty) {null} else {$x}} |
-    split column ': ' | str trim | transpose -rd)
-  $my_ip
+  }
+}
+
+def process-ip [ip] {
+  if $env.__ifconfig {
+    $ip | lines | split column ': ' | transpose -rd
+  } else {
+    $ip | lines | each {|x| if ($x | is-empty) {null} else {$x} } |
+    split column ': ' | str trim | transpose -rd
+  }
 }
