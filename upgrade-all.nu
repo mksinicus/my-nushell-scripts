@@ -1,7 +1,18 @@
 #!/usr/bin/env nu
 
-input -s "Press enter to upgrade apt:"
-sudo apt upgrade
-input -s "Press enter to refresh snap:"
-snap refresh
-echo "Your softwares are latest. Have a nice day!"
+def main [] {
+  let yes = (input "Upgrade apt? [Y/n]")
+  if not ($yes | str contains 'n') {
+    sudo apt upgrade
+  } else {
+    "Apt upgrade aborted."
+  }
+
+  let yes = (input "Refresh snap? [Y/n]")
+  if not ($yes | str contains 'n') {
+    snap refresh
+  } else {
+    "Snap refresh aborted."
+  }
+  # echo "Your softwares are latest. Have a nice day!"
+}
