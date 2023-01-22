@@ -1,8 +1,7 @@
 # .into-utf8.nu / unicode.nu
 
 # Local aliases
-let str_remove = {|x| str replace -sa ($x | into string) ''}
-alias remove = do $str_remove
+alias remove = do {|x| str replace -sa ($x | into string) ''}
 alias replace = str replace -sa
 alias contains = str contains
 alias ncontains = str contains -n
@@ -12,7 +11,9 @@ alias ncontains = str contains -n
 export def "from unicode" [
   --decimal (-d)  # From decimal instead of hex.
 ] {
-  let uni = $in
+  let temp = [(metadata $in).span, $in]
+  let span = $temp.0
+  let uni = $temp.1
   $uni | each {
     |e|
     let uni = ($e | into string)
@@ -26,9 +27,9 @@ export def "from unicode" [
     )
     let uni = ($uni | uni-normalize)
     if $decimal {
-      $uni | into hex | into utf8 | decode utf8
+      $uni | into hex | into utf8 $span | decode utf8
     } else {
-      $uni | into utf8 | decode utf8
+      $uni | into utf8 $span | decode utf8
     }
   }
 }
@@ -45,16 +46,43 @@ def uni-normalize [] {
 # Convert hex-represented Unicode into UTF-8
 export def "into utf8" [
   --raw (-r) # Output as raw octets instead of Nushell's binary primitive
+  --decimal (-d) # Treat input as decimal
+  span?: string # Only useful when called by other functions. Do not fill it.
 ] {
   # A shame there is not yet pattern matching in Nushell, while `$in` can be
   # used only once and at the beginning of a function.
   let temp = [(metadata $in).span, $in]
-  let span = $temp.0
+  let span = if $span != null {
+    $span
+  } else {
+    $temp.0
+  }
   let in_hexes = $temp.1
+  
   $in_hexes | each {
     |in_hex|
     $in_hex | split row ' ' | each {
       |in_hex|
+      let in_hex = if $decimal {
+        # Without limiting it, it returns something but not exactly the result...
+        try { let _ = ($in_hex | into int) } catch {
+          panic {
+            msg: "Input cannot be parsed as decimal"
+            label: "Try removing `-d` if input was hex"
+            span: $span
+          }
+        }
+        $in_hex | into int
+      } else {
+        try { let _ = ($in_hex | into int -r 16) } catch {
+          panic {
+            msg: "Input cannot be parsed as hex"
+            label: "Invalid hex"
+            span: $span
+          }
+        }
+        $in_hex
+      }
       let in_int = ($in_hex | into int -r 16)
       if $in_int < 0 {
         panic { # fancy error make
