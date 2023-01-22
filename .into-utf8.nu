@@ -129,7 +129,7 @@ def binarize-octets [octets: list] {
 
 # Get Unicode representation of character(s)
 export def "into unicode" [
-  --html(-w)      # HTML Style, p.ex. ``&#x13000;``
+  --html(-w)      # HTML Style, p.ex. `&#x13000;`
   --c (-c)        # `\u13000`
   --rust (-r)     # `\u{13000}`
   --decimal (-d)  # Use decimal instead of hex. Does not work with `--c` and `--rust`.
@@ -144,7 +144,6 @@ export def "into unicode" [
     let $u_chars = ($in_chars | split chars | each {
       |e| $e | utf82unicode | str upcase
     })
-
     if $html {
       if $decimal {
         $u_chars | into int -r 16 | into string | each {
