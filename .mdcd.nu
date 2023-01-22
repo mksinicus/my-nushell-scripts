@@ -1,9 +1,7 @@
 #!/usr/bin/env nu
 
-export def mdcd [dir: string] {
+export def-env mdcd [dir: string] {
+  # Had to use `def-env`! I didn't know.
   mkdir $dir
-  commandline -a $'cd ($dir)'
-  # Or something that replaces current process... No way.
-  # cd $dir
-  # exec nu
+  cd $dir
 }
