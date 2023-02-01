@@ -1,4 +1,6 @@
 # .url-decode.nu
+# After writing this I became aware of builtin command `from url`. But that's
+# not quite what I wanted.
 
 alias index-of = str index-of
 alias replace = str replace -s
