@@ -26,10 +26,14 @@ export def "from unicode" [
       }
     )
     let uni = ($uni | uni-normalize)
+    # Just afterthought, but it can be $"\u{($uni)}" or `char -u` or `char -i`.
+    # Alright, I opt in.
     if $decimal {
-      $uni | into hex | into utf8 $span | decode utf8
+      # $uni | into hex | into utf8 $span | decode utf8
+      char -i ($uni | into int)
     } else {
-      $uni | into utf8 $span | decode utf8
+      # $uni | into utf8 $span | decode utf8
+      char -u $uni
     }
   }
 }

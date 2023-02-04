@@ -6,13 +6,14 @@ export def entity [
 ] {
   let json_path = "/home/marco/nu/lib/entities.json"
   if $list {
-    return (open $json_path | transpose key value | each {
+    # Use par-each to accelerate. On my PC it saves one second on each run.
+    return (open $json_path | transpose key value | par-each {
       |e|
       {
         key: $e.key
         value: ($e.value | into hex)
       }
-    } | transpose -rd)
+    } | sort-by key | transpose -rd)
   }
   $names | each {
     |name|
