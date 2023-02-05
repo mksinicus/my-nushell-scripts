@@ -1,5 +1,11 @@
 # .entity.nu
 
+alias remove = do {|x| str replace -a $x ''}
+alias replace = do {|x y| str replace -sa $x $y}
+
+export alias ent = entity
+export alias went = with-entity
+
 export def entity [
   ...names: string
   --list (-l) # List all symbols
@@ -22,6 +28,23 @@ export def entity [
       panic {msg: "Invalid input", label: "No such entity", span: $span}
     }
   } | str join
+}
+
+export def with-entity [] {
+  let strs = $in
+  $strs | each {
+    |str|
+    let span = (metadata $str).span
+    mut out = $str
+    let pairs = ($str | parse -r '(?<from>&\w+;)' | par-each {
+      |e|
+      $e | insert 'to' ($e.from | remove '[&;]' | try {entity $in} catch {$e.from})
+    })
+    for pair in $pairs {
+      $out = ($out | replace $pair.from $pair.to)
+    }
+    $out
+  }
 }
 
 def panic [info] {
