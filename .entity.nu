@@ -16,10 +16,11 @@ export def entity [
     return (open $json_path | transpose key value | par-each {
       |e|
       {
-        key: $e.key
-        value: ($e.value | into hex)
+        name: $e.key
+        hex: ($e.value | into hex)
+        character: (char -i $e.value)
       }
-    } | sort-by key | transpose -rd)
+    } | sort-by name)
   }
   $names | each {
     |name|
