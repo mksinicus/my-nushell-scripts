@@ -17,8 +17,8 @@ export def entity [
       |e|
       {
         name: $e.key
-        hex: ($e.value | into hex)
         character: (char -i $e.value)
+        unicode: ($e.value | into hex)
       }
     } | sort-by name)
   }
