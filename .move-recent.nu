@@ -1,13 +1,12 @@
 # .move-recent.nu
 
 export def mv-recent [
-  glob: string # Not real glob, I just simulated `*`
+  glob: string # Filename glob provided to `ls`, file only (no dir nor symlink)
   dest: string # Destination
   duration: duration
 ] {
-  ls . | where type == file | where modified > ((date now) - $duration) | 
-  get name | if $glob == '*' { $in } else { find $glob } |
-  each {
+  ls $glob | where type == file | where modified > ((date now) - $duration) | 
+  get name | each {
     |e|
     mv -v $e $dest
   } | flatten

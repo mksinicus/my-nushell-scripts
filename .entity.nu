@@ -12,15 +12,15 @@ export def entity [
 ] {
   let json_path = "/home/marco/nu/lib/entities.json"
   if $list {
-    # Use par-each to accelerate. On my PC it saves one second on each run.
-    return (open $json_path | transpose key value | par-each {
-      |e|
-      {
-        name: $e.key
-        character: (char -i $e.value)
-        unicode: ($e.value | into hex)
-      }
-    } | sort-by name)
+    # History of optimization: 1.7s -> 0.7s -> 0.2s
+    # Naive `each` -> `par-each` plus `sort-by` -> builtin cellpath commands
+    return (open $json_path | transpose name character |
+    insert unicode {
+      |cols| $cols.character | fmt | get upperhex
+    } |
+    update character {
+      |cols| char -i $cols.character
+    })
   }
   $names | each {
     |name|

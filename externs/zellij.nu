@@ -259,6 +259,7 @@ export def zlj [] {
 export def "zlj kk" [] {
   $in | par-each {
     |e|
+    let e = ($e | str replace -s ' (current)' '')
     zlj k $e
     print ('Killed session `' + $e + '`')
   }

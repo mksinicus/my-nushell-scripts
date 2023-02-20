@@ -4,24 +4,31 @@
 export def "into hex" [] {
   # I wonder if this compatibility with `each` can be later implemented 
   # separately in the way of Python's decorator.
-  $in | each {
-    |in_dec|
-    let hexits = "0123456789abcdef"
-    mut in_dec = ($in_dec | into int)
-    let is_negative = (if $in_dec < 0 { $in_dec = 0 - $in_dec; true } else { false })
-    mut out_hex = ""
-    loop {
-      let remainder = ($in_dec mod 16)
-      let hexit = ($hexits | str substring $remainder..($remainder + 1))
-      $out_hex = ($out_hex + $hexit)
-      $in_dec = $in_dec // 16
-      if $in_dec == 0 {
-        break
-      }
-    }
-    if $is_negative { $out_hex = $out_hex + "-"}
-    $out_hex | str reverse
-  }
+  # $in | each {
+  #   |in_dec|
+  #   let hexits = "0123456789abcdef"
+  #   mut in_dec = ($in_dec | into int)
+  #   let is_negative = (if $in_dec < 0 { $in_dec = 0 - $in_dec; true } else { false })
+  #   mut out_hex = ""
+  #   loop {
+  #     let remainder = ($in_dec mod 16)
+  #     let hexit = ($hexits | str substring $remainder..($remainder + 1))
+  #     $out_hex = ($out_hex + $hexit)
+  #     $in_dec = $in_dec // 16
+  #     if $in_dec == 0 {
+  #       break
+  #     }
+  #   }
+  #   if $is_negative { $out_hex = $out_hex + "-"}
+  #   $out_hex | str reverse
+  # }
+
+  # The naive part above is preserved, but for best performance, use
+  # builtin cellpath-compatible commands.
+  
+  # Perfomance note: conversion of 10000 random integers (ranging from 70 to
+  # 18000) cost 7s265ms before and 251ms after.
+  $in | fmt | get upperhex
 }
 
 
