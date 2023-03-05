@@ -15,8 +15,9 @@ export def rnm [
   alias find = do (if $regex {{|x| find -r $x}} else {{|x| find $x}})
   
   # Make `mv` verbose. And we process the output into a table.
-  ls | get name | find $pattern | each {
+  ls | get name | find $pattern | par-each {
     |e| mv -v $e ($e | replace $pattern $new)
-  } | flatten | str substring '6,' | split column ' to ' | rename 'moved' 'to' |
+  } | flatten | str substring '6,' | split column ' to ' |
+  rename 'moved' 'to' | sort-by moved |
   if not $save {$in} else {$in | to nuon}
 }
